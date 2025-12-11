@@ -1,10 +1,7 @@
-on: [workflow_dispatch]
-
 name: Build Jekyll (no GitHub Pages)
 
 on:
-  push:
-    branches: ["main"]
+  # solo esecuzione manuale dalla tab "Actions"
   workflow_dispatch:
 
 permissions:
@@ -28,4 +25,3 @@ jobs:
         run: bundle exec jekyll build --baseurl ""
         env:
           JEKYLL_ENV: production
-
