@@ -1,0 +1,43 @@
+# Deploy to Azure Container Registry
+# This workflow builds and pushes a Docker image to Azure Container Registry
+
+name: Deploy to ACR
+
+on:
+  push:
+    branches: ["main"]
+
+# Required GitHub Secrets (must be configured in repository settings):
+# - ENV: Environment variables file content for the application
+# - AZURE_CONTAINER_REGISTRY: Azure Container Registry URL (e.g., myregistry.azurecr.io)
+# - AZURE_USERNAME: Azure Container Registry username
+# - AZURE_PASSWORD: Azure Container Registry password or access token
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file from secret
+        run: |
+          echo "${{ secrets.ENV }}" > src/.env
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+          username: ${{ secrets.AZURE_USERNAME }}
+          password: ${{ secrets.AZURE_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/techworkshop-l300-ai-apps-and-agents:latest -f src/Dockerfile src/
+          docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/techworkshop-l300-ai-apps-and-agents:latest
+
+      - name: Cleanup .env file
+        if: always()
+        run: |
+          rm -f src/.env
