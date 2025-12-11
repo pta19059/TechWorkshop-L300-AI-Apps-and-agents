@@ -13,6 +13,9 @@ on:
 # - AZURE_USERNAME: Azure Container Registry username
 # - AZURE_PASSWORD: Azure Container Registry password or access token
 
+permissions:
+  contents: read
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
